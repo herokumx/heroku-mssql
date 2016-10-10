@@ -1,0 +1,9 @@
+[mssql-private-preview]
+name=mssql-private-preview
+baseurl=https://private-repo.microsoft.com/rhel7/mssql-private-preview/
+enabled=1
+gpgcheck=1
+gpgkey=https://private-repo.microsoft.com/keys/dpgswdist.v1.asc
+
+sslclientcert=/etc/ssl/yum/client.private-repo.microsoft.com.pem
+sslclientkey=/etc/ssl/yum/client.private-repo.microsoft.com.pem
