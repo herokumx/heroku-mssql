@@ -8,44 +8,12 @@ VERBOSE=${VERBOSE:-}
 USER_URL="${1:-}";
 OUTPUT_DIR=$(mktemp -d)
 CONFIG_FILENAME="$OUTPUT_DIR/config.tar.gz"
-CERT_FILENAME="client.private-repo.microsoft.com.pem"
-APT_CONF_FILENAME="99microsoft-private-repo-auth.conf"
-RHEL7_REPO_LIST_FILENAME="private-repo.microsoft.com.repo"
-UBUNTU_REPO_LIST_FILENAME="private-repo.microsoft.com.list"
-REPO_KEYS_URL="https://private-repo.microsoft.com/keys/dpgswdist.v1.asc"
-WGET_OPTIONS=""
-CURL_OPTIONS=""
+CERT_FILENAME="c$OUTPUT_DIR/client.private-repo.microsoft.com.pem"
+APT_CONF_FILENAME="$OUTPUT_DIR/99microsoft-private-repo-auth.conf"
+RHEL7_REPO_LIST_FILENAME="$OUTPUT_DIR/private-repo.microsoft.com.repo"
+UBUNTU_REPO_LIST_FILENAME="$OUTPUT_DIR/private-repo.microsoft.com.list"
+REPO_KEYS_URL="$OUTPUT_DIR/dpgswdist.v1.asc"
 
-# Quiet by default
-[ -z $VERBOSE ] && WGET_OPTIONS=--quiet
-[ -z $VERBOSE ] && CURL_OPTIONS=-q
-
-# Validate that user provided URL.
-if [ -z ${USER_URL:-} ]; then
-	echo "Missing parameter: URL to configuration"
-	exit
-fi
-
-regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-
-# Validate syntax of user input.
-if ! [[ "$USER_URL" =~ $regex ]]; then
-	echo "Invalid URL: $URL"
-	exit 1
-fi
-
-# Download configuration informatino
-echo "Downloading repository configuration..."
-error=0
-wget $WGET_OPTIONS -O$CONFIG_FILENAME "$USER_URL" || error=$?
-
-if [ $error -ne 0 ]; then
-  echo "An error occurred while downloading configuration, error $error."
-  exit 1
-fi
-
-grep -i centos /etc/os-release >& /dev/null && os=rhel7
-grep -i rhel /etc/os-release >& /dev/null && os=rhel7
 grep -i ubuntu /etc/os-release >& /dev/null && os=ubuntu
 
 # Unpack repository configuration
@@ -92,4 +60,3 @@ echo "Repository configuration completed successfully."
 # Clean-up
 rm -rf $OUTPUT_DIR
 rm -rf $CONFIG_FILENAME
-
